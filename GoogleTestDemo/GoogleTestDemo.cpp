@@ -44,24 +44,21 @@ public:
 
 };
 
-struct TestStub {
-	bool stubbedLogin(std::string username, std::string password) {
-		std::cout << "\nInside stubbed login\n\n";
-		return true;
-	}
-};
+bool login() {
+	std::cout << "\nInside global function\n\n";
+	return true;
+}
 
 
 TEST(MyDBTest, LoginTest) {
 	// Arrange
 	MockDBC dbc;
 	MyDatabase db(dbc);
-	TestStub stub;
 
-	// here, we can invoke a single function inside the actual implementation as well.
-	// ON_CALL(dbc, login(testing::_, testing::_)).WillByDefault(testing::Invoke(&actualConnector, &DatabaseConnector::login));
+	// here, we can invoke a global function as a stub. but the same cannot accept any arguments.
+	ON_CALL(dbc, login(testing::_, testing::_)).WillByDefault(testing::InvokeWithoutArgs(login));
 
-	EXPECT_CALL(dbc, login(testing::_, testing::_)).Times(1).WillOnce(testing::Invoke(&stub, &TestStub::stubbedLogin));
+	EXPECT_CALL(dbc, login(testing::_, testing::_)).Times(1).WillOnce(testing::InvokeWithoutArgs(login));
 
 	//Act
 	auto ret = db.init("USerName", "Password");
