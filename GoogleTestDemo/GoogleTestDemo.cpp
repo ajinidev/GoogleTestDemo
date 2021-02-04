@@ -1,95 +1,78 @@
 #include "pch.h"
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <string>
 
-class MyClass {
-	int num;
+
+class DatabaseConnector {
+
 public:
-	MyClass(int n) {
-		num = n;
-	}
-
-	void add(int x) {
-		num += x;
-	}
-
-	int getNum() { return num; }
+	virtual bool login(std::string username, std::string password) { return false; }
+	virtual bool logout(std::string username) { return true; }
+	virtual int fetchRecord() { return -1; }
 };
 
-//TEST(Object, FirstTest) {
-//	// Arrangement
-//	MyClass m(100);			// The problem is here. everytime we are creating instances.. or similary some piece of code is duplicated everytime..
-//
-//	// Act
-//	m.add(1);
-//
-//	// Validate
-//	EXPECT_EQ(m.getNum(), 101); // works fine.
-//}
-//
-//TEST(Object, SecondTest) {
-//	// Arrangement
-//	MyClass m(100);
-//
-//	// Act
-//	m.add(2);
-//
-//	// Validate
-//	EXPECT_EQ(m.getNum(), 102); // works fine.
-//}
-//
-//TEST(Object, ThirdTest) {
-//	// Arrangement
-//	MyClass m(100);
-//
-//	// Act
-//	m.add(3);
-//
-//	// Validate
-//	EXPECT_EQ(m.getNum(), 103); // works fine.
-//}
+class MyDatabase {
+	DatabaseConnector& dbc;
 
+public:
+	MyDatabase(DatabaseConnector& dbc) : dbc(dbc) {
+
+	}
+
+	int init(std::string username, std::string password) {
+		if (dbc.login(username, password)) {
+			std::cout << "[CONNECTION SUCCESS]\n";
+			return 1;
+		}
+		std::cout << "[CONNECTION FAILURE]\n";
+		return 1;
+	}
+};
 
 /*
-	The Solution for code duplication.
+	Mock for database connector class
+
 */
 
-
-struct MyClassTest : public testing::Test {
-	MyClass *obj;
-
+class MockDBC : public DatabaseConnector {
 public:
-	void SetUp() override {
-		obj = new MyClass(100);
-	}
-	void TearDown() override {
-		delete obj;
-	}
+	// means, function which returns int and takes no argument. MOCK_METHOD0 0 in this means, this is not taking any input arguments.
+	MOCK_METHOD0(fetchRecord, int());
+	MOCK_METHOD1(logout, bool(std::string username));
+	MOCK_METHOD2(login, bool(std::string username, std::string password));
+
 };
 
-TEST_F(MyClassTest, FirstTest) {
+TEST(MyDBTest, LoginTest) {
+	// Arrange
+	MockDBC dbc;
+	MyDatabase db(dbc);
+	EXPECT_CALL(dbc, login("USerName", "Password"))	// telling that here, if this is the input for the function,,			// in this case, if the parameters are not correct, then it will fail. inorder to ignore the parameter values, use _ instead.
+		// EXPECT_CALL(dbc, login(_,_))
+		.Times(testing::AtLeast(1))					// and the function is being called atleast once (in this case),		// so here, the function is not called atleast once, then it will fail.
+		.WillOnce(testing::Return(true));			// then return true once.
 
-	// Act
-	obj->add(1);
+	//Act
+	auto ret = db.init("USerName", "Password");
 
-	// Validate
-	EXPECT_EQ(obj->getNum(), 101); // works fine.
+	// Assert
+	EXPECT_EQ(ret, 1);
 }
 
-TEST_F(MyClassTest, SecondTest) {
 
-	// Act
-	obj->add(2);
+TEST(MyDBTest, LoginTest) {
+	// Arrange
+	MockDBC dbc;
+	MyDatabase db(dbc);
+	EXPECT_CALL(dbc, login("USerName", "Password"))	// telling that here, if this is the input for the function
+		// EXPECT_CALL(dbc, login(_,_))
+		.Times(testing::AtLeast(1))					// and the function is being called atleast once (in this case),
+		.WillOnce(testing::Return(true));			// then return true once.
 
-	// Validate
-	EXPECT_EQ(obj->getNum(), 102); // works fine.
-}
+	//Act
+	auto ret = db.init("USerName", "Password");
 
-TEST_F(MyClassTest, ThirdTest) {
-
-	// Act
-	obj->add(3);
-
-	// Validate
-	EXPECT_EQ(obj->getNum(), 103); // works fine.
+	// Assert
+	EXPECT_EQ(ret, 1);
 }
