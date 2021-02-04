@@ -2,68 +2,94 @@
 #include <gtest/gtest.h>
 #include <string>
 
-/*
-	Writing Unit test have 3 parts.
-	- Arrange
-	- Act
-	- Assert
-
-	Run extreamly fast, Independent and shall be self contained.
-
-*/
-
-TEST(MathTest, Addition) {
-	// Arrangement
-	int x = 10; int y = 15;
-
-	// Act
-	x += 5;
-
-	// Validate
-	EXPECT_EQ(x, y);
-}
-
-TEST(MathTest, Subtraction) {
-	// Arrangement
-	int x = 10; int y = 5;
-
-	// Act
-	x -= 5;
-
-	// Validate
-	EXPECT_EQ(x, y);
-}
-
-
 class MyClass {
-	std::string id;
+	int num;
 public:
-	MyClass(std::string z) {
-		id = z;
+	MyClass(int n) {
+		num = n;
 	}
 
-	std::string getId() { return id; }
+	void add(int x) {
+		num += x;
+	}
+
+	int getNum() { return num; }
 };
 
-TEST(Object, FirstTest) {
-	// Arrangement
-	MyClass m("test");
+//TEST(Object, FirstTest) {
+//	// Arrangement
+//	MyClass m(100);			// The problem is here. everytime we are creating instances.. or similary some piece of code is duplicated everytime..
+//
+//	// Act
+//	m.add(1);
+//
+//	// Validate
+//	EXPECT_EQ(m.getNum(), 101); // works fine.
+//}
+//
+//TEST(Object, SecondTest) {
+//	// Arrangement
+//	MyClass m(100);
+//
+//	// Act
+//	m.add(2);
+//
+//	// Validate
+//	EXPECT_EQ(m.getNum(), 102); // works fine.
+//}
+//
+//TEST(Object, ThirdTest) {
+//	// Arrangement
+//	MyClass m(100);
+//
+//	// Act
+//	m.add(3);
+//
+//	// Validate
+//	EXPECT_EQ(m.getNum(), 103); // works fine.
+//}
+
+
+/*
+	The Solution for code duplication.
+*/
+
+
+struct MyClassTest : public testing::Test {
+	MyClass *obj;
+
+public:
+	void SetUp() override {
+		obj = new MyClass(100);
+	}
+	void TearDown() override {
+		delete obj;
+	}
+};
+
+TEST_F(MyClassTest, FirstTest) {
 
 	// Act
-	auto id = m.getId();
+	obj->add(1);
 
 	// Validate
-	EXPECT_EQ(id, "test"); // works fine.
-	EXPECT_STREQ(id.c_str(), "test"); // works fine.
-	//EXPECT_EQ(id.c_str(), "test"); // fails.
+	EXPECT_EQ(obj->getNum(), 101); // works fine.
+}
 
+TEST_F(MyClassTest, SecondTest) {
 
+	// Act
+	obj->add(2);
 
-	/*
-		Types of string asserssions.
-		Equal			EXPECT_STREQ		ASSERT_STREQ
-		Not Equal		EXPECT_STRNE		ASSERT_STRNE
-		Case Equal		EXPECT_STRCASEEQ	ASSERT_STRCASEEQ
-		Case Not Equal	EXPECT_STRCASENE	ASSERT_STRCASENE
-	*/
+	// Validate
+	EXPECT_EQ(obj->getNum(), 102); // works fine.
+}
+
+TEST_F(MyClassTest, ThirdTest) {
+
+	// Act
+	obj->add(3);
+
+	// Validate
+	EXPECT_EQ(obj->getNum(), 103); // works fine.
 }
