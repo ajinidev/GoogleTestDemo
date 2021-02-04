@@ -44,21 +44,28 @@ public:
 
 };
 
-bool login() {
-	std::cout << "\nInside global function\n\n";
-	return true;
+void abc() {
+	std::cout << "\nInside global function abc\n\n";
 }
+
+struct Stub {
+	void xyz() {
+		std::cout << "\nInside global function xyz\n\n";
+
+	}
+};
 
 
 TEST(MyDBTest, LoginTest) {
 	// Arrange
 	MockDBC dbc;
 	MyDatabase db(dbc);
+	Stub stub;
 
 	// here, we can invoke a global function as a stub. but the same cannot accept any arguments.
-	ON_CALL(dbc, login(testing::_, testing::_)).WillByDefault(testing::InvokeWithoutArgs(login));
+	// ON_CALL(dbc, login(testing::_, testing::_)).WillByDefault(testing::InvokeWithoutArgs(login));
 
-	EXPECT_CALL(dbc, login(testing::_, testing::_)).Times(1).WillOnce(testing::InvokeWithoutArgs(login));
+	EXPECT_CALL(dbc, login(testing::_, testing::_)).Times(1).WillOnce(testing::DoAll(testing::Invoke(abc), testing::Invoke(&stub, &Stub::xyz), testing::Return(true)));
 
 	//Act
 	auto ret = db.init("USerName", "Password");
