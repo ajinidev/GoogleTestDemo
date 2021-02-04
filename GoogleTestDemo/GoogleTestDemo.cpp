@@ -48,26 +48,8 @@ TEST(MyDBTest, LoginTest) {
 	// Arrange
 	MockDBC dbc;
 	MyDatabase db(dbc);
-	EXPECT_CALL(dbc, login("USerName", "Password"))	// telling that here, if this is the input for the function,,			// in this case, if the parameters are not correct, then it will fail. inorder to ignore the parameter values, use _ instead.
-		// EXPECT_CALL(dbc, login(_,_))
+	EXPECT_CALL(dbc, login("USerName", "Password"))	// telling that here, if this is the input for the function,,	
 		.Times(testing::AtLeast(1))					// and the function is being called atleast once (in this case),		// so here, the function is not called atleast once, then it will fail.
-		.WillOnce(testing::Return(true));			// then return true once.
-
-	//Act
-	auto ret = db.init("USerName", "Password");
-
-	// Assert
-	EXPECT_EQ(ret, 1);
-}
-
-
-TEST(MyDBTest, LoginTest) {
-	// Arrange
-	MockDBC dbc;
-	MyDatabase db(dbc);
-	EXPECT_CALL(dbc, login("USerName", "Password"))	// telling that here, if this is the input for the function
-		// EXPECT_CALL(dbc, login(_,_))
-		.Times(testing::AtLeast(1))					// and the function is being called atleast once (in this case),
 		.WillOnce(testing::Return(true));			// then return true once.
 
 	//Act
