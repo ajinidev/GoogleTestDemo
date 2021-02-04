@@ -1,24 +1,35 @@
 #include "pch.h"
 #include <gtest/gtest.h>
+#include <string>
 
-TEST(TestName, SubTestName_1) {
-	EXPECT_EQ(1, 1);
-	EXPECT_TRUE(false);		// Assertion Failed. But execution will continue.
+/*
+	Writing Unit test have 3 parts.
+	- Arrange
+	- Act
+	- Assert
 
-	ASSERT_FALSE(1 == 1);	// This will stop the execution [fatal assertion]
+	Run extreamly fast, Independent and shall be self contained.
 
-	std::cout << "this will not be printed";
+*/
 
-	/*
-		Other macros
+TEST(MathTest, Addition) {
+	// Arrangement
+	int x = 10; int y = 15;
 
-		Equal				EXPECT_EX	ASSERT_EX
-		NotEqual			EXPECT_NE	ASSERT_NE
-		Less Than			EXPECT_LT	ASSERT_LT
-		Less than Equal		EXPECT_LE	ASSERT_LE
-		Greater Than		EXPECT_GT	ASSERT_GT
-		Greater Than Equal	EXPECT_GE	ASSERT_GE
+	// Act
+	x += 5;
 
-		Best practice : Keep single assersion in a test case even though multiple assersions can be added in one TC
-	*/
+	// Validate
+	EXPECT_EQ(x, y);
+}
+
+TEST(MathTest, Subtraction) {
+	// Arrangement
+	int x = 10; int y = 5;
+
+	// Act
+	x -= 5;
+
+	// Validate
+	EXPECT_EQ(x, y);
 }
