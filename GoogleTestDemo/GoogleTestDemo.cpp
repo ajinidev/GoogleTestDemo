@@ -49,9 +49,9 @@ TEST(MyDBTest, LoginTest) {
 	// Arrange
 	MockDBC dbc;
 	MyDatabase db(dbc);
-	EXPECT_CALL(dbc, login(testing::_,testing::_))	// telling that here, if this is the input for the function,,			// in this case, if the parameters are not correct, then it will fail. inorder to ignore the parameter values, use _ instead.
-		.Times(testing::AtLeast(1))					// and the function is being called atleast once (in this case),		// so here, the function is not called atleast once, then it will fail.
-		.WillOnce(testing::Return(true));			// then return true once.
+	// Here there is no expectation that this call has to be made and the number of times of call is also not monitored.
+	// Instead, this will be invoked if the call (login) is invoked once or more, then it will return true by default.
+	ON_CALL(dbc, login(testing::_, testing::_)).WillByDefault(testing::Return(true));
 
 	//Act
 	auto ret = db.init("USerName", "Password");
