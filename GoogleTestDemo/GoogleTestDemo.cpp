@@ -44,7 +44,7 @@ public:
 
 };
 
-bool login() {
+bool login() { // this is not supposed to take any arguments.
 	std::cout << "\nInside global function\n\n";
 	return true;
 }
