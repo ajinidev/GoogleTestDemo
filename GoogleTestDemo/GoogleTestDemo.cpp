@@ -64,6 +64,7 @@ TEST(MyDBTest, LoginTest) {
 
 	// This can be used when one function out of two is being called to do something.
 	ON_CALL(dbc, login(testing::_, testing::_)).WillByDefault(testing::Return(true));
+	ON_CALL(dbc, login2(testing::_, testing::_)).WillByDefault(testing::Return(true));
 
 	//Act
 	auto ret = db.init("USerName", "Password");
